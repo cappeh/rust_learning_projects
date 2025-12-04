@@ -1,4 +1,5 @@
 use std::io;
+use std::io::Write;
 
 enum Operations {
     Add,
@@ -7,22 +8,29 @@ enum Operations {
     Divide
 }
 
+fn get_parsed_number() -> u32 {
+    let mut number = String::new();
+    io::stdin().read_line(&mut number).expect("Error Reading Stdin");
+    let number: u32 = number.trim().parse().expect("Invalid Number");
+    number
+}
+
 fn main() {
     println!("Basic Calculator!");
     println!("Operations include '+,-,*,/'");
 
-    println!("Enter the first number:");
-    let mut first_number = String::new();
-    io::stdin().read_line(&mut first_number).expect("error reading line");
-    let first_number: u32 = first_number.trim().parse().expect("not a number");
+    print!("Enter the first number: ");
+    io::stdout().flush().unwrap();
+    let first_number = get_parsed_number();
+    io::stdout().flush().unwrap();
 
 
-    println!("Enter the second number:");
-    let mut second_number = String::new();
-    io::stdin().read_line(&mut second_number).expect("error reading line");
-    let second_number: u32 = second_number.trim().parse().expect("not a number");
+    print!("Enter the second number: ");
+    io::stdout().flush().unwrap();
+    let second_number = get_parsed_number();
 
-    println!("enter the operation:");
+    print!("Enter the operation: ");
+    io::stdout().flush().unwrap();
     let mut operation = String::new();
     io::stdin().read_line(&mut operation).expect("error reading line");
     let operation = operation.trim();
