@@ -50,7 +50,14 @@ fn main() {
         Operations::Add => first_number + second_number,
         Operations::Subtract => first_number - second_number,
         Operations::Multiply => first_number * second_number,
-        Operations::Divide => first_number / second_number,
+        Operations::Divide => {
+            if second_number == 0 {
+                println!("Error: Division by Zero");
+                return;
+            } else {
+                first_number / second_number
+            }
+        }
     };
 
     println!("Result: {result}");
