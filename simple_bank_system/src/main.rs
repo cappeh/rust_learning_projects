@@ -1,12 +1,19 @@
 #[derive(Debug)]
-struct Account {
-    name: String,
-    balance: f64,
+enum AccountType {
+    Current,
+    Savings,
 }
 
-impl Account {
-    fn new(name: &str, balance: f64) -> Self {
-        Self { name: name.to_string(), balance }
+#[derive(Debug)]
+struct BankAccount {
+    name: String,
+    balance: f64,
+    account_type: AccountType,
+}
+
+impl BankAccount {
+    fn new(name: &str, balance: f64, account_type: AccountType) -> Self {
+        Self { name: name.to_string(), balance, account_type }
     }
 
     fn deposit(&mut self, amount: f64) {
@@ -25,13 +32,19 @@ impl Account {
         self.balance -= amount;
     }
 
+    fn apply_interest(&mut self) {
+        if let AccountType::Savings = self.account_type {
+            self.balance *= 1.04;
+        }
+    }
+
     fn display(&self) {
-        println!("Account Name: {}, Balance: {}", self.name, self.balance);
+        println!("Bank Account Name: {}, Balance: {}", self.name, self.balance);
     }
 }
 
 fn main() {
-    let mut jsmith = Account::new("John Smith", 250.00);
+    let mut jsmith = BankAccount::new("John Smith", 250.00, AccountType::Current);
     dbg!(&jsmith);
 
     jsmith.deposit(50.00);
@@ -40,4 +53,8 @@ fn main() {
     jsmith.withdraw(325.50);
 
     jsmith.display();
+
+    let mut jdoe = BankAccount::new("Jane Doe", 5000.00, AccountType::Savings);
+    jdoe.apply_interest();
+    jdoe.display();
 }
