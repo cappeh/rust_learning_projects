@@ -4,6 +4,15 @@ enum AccountType {
     Savings,
 }
 
+impl AccountType {
+    fn interest_rate(&self) -> f64 {
+        match self {
+            AccountType::Current => 0.00,
+            AccountType::Savings => 0.04,
+        }
+    }
+}
+
 #[derive(Debug)]
 struct BankAccount {
     name: String,
@@ -33,9 +42,8 @@ impl BankAccount {
     }
 
     fn apply_interest(&mut self) {
-        if let AccountType::Savings = self.account_type {
-            self.balance *= 1.04;
-        }
+        let rate = self.account_type.interest_rate();
+        self.balance *= 1.0 + rate;
     }
 
     fn display(&self) {
@@ -55,6 +63,9 @@ fn main() {
     jsmith.display();
 
     let mut jdoe = BankAccount::new("Jane Doe", 5000.00, AccountType::Savings);
+    jdoe.apply_interest();
+    jdoe.display();
+    jdoe.deposit(500.00);
     jdoe.apply_interest();
     jdoe.display();
 }
