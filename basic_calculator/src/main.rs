@@ -1,15 +1,29 @@
 use std::io;
 use std::io::Write;
 
-use crate::math::operations::{ add, subtract, multiply, divide };
-
 pub mod math;
+use math::operations::{ add, subtract, multiply, divide };
 
 enum Operations {
     Add,
     Subtract,
     Multiply,
     Divide
+}
+
+impl Operations {
+    fn apply_operation(&self, lhs: f64, rhs: f64) -> Option<f64> {
+        match self {
+           Self::Add => add(lhs, rhs),
+           Self::Subtract => subtract(lhs, rhs),
+           Self::Multiply => multiply(lhs, rhs),
+           Self::Divide => divide(lhs, rhs),
+        }
+    }
+}
+
+fn welcome_prompt() {
+    println!("Basic Calculator With Operations: '+, -, *, /'");
 }
 
 fn prompt(msg: &str) {
@@ -30,8 +44,7 @@ fn get_parsed_number() -> f64 {
 }
 
 fn main() {
-    println!("Basic Calculator!");
-    println!("Operations include '+,-,*,/'");
+    welcome_prompt();
 
     prompt("Enter the first number: ");
     let first_number = get_parsed_number();
@@ -56,27 +69,7 @@ fn main() {
         }
     };
 
-    match op {
-        Operations::Add => {
-            if let Some(res) = add(first_number, second_number) {
-                println!("Result: {res}");
-            }
-        }
-        Operations::Subtract => {
-            if let Some(res) = subtract(first_number, second_number) {
-                println!("Result: {res}");
-            }
-        }
-        Operations::Multiply => {
-            if let Some(res) = multiply(first_number, second_number) {
-                println!("Result: {res}");
-            }
-        }
-        Operations::Divide => {
-            if let Some(res) = divide(first_number, second_number) {
-                println!("Result: {res}");
-            }
-        }
-        
-    };
+    if let Some(res) = op.apply_operation(first_number, second_number) {
+        println!("Result: {res}");
+    }
 }
