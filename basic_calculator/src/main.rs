@@ -23,7 +23,7 @@ impl Operations {
 }
 
 fn welcome_prompt() {
-    println!("Basic Calculator With Operations: '+, -, *, /'");
+    println!("Basic Calculator (+, -, *, /)");
 }
 
 fn prompt(msg: &str) {
@@ -43,33 +43,42 @@ fn get_parsed_number() -> f64 {
     }
 }
 
+fn parse_operation(op: &str) -> Option<Operations> {
+    match op {
+        "+" => Some(Operations::Add),
+        "-" => Some(Operations::Subtract),
+        "*" => Some(Operations::Multiply),
+        "/" => Some(Operations::Divide),
+        _ => None,
+    }
+}
+
 fn main() {
     welcome_prompt();
 
-    prompt("Enter the first number: ");
-    let first_number = get_parsed_number();
+    loop {
+        prompt("Enter the first number: ");
+        let first_number = get_parsed_number();
 
 
-    prompt("Enter the second number: ");
-    let second_number = get_parsed_number();
+        prompt("Enter the second number: ");
+        let second_number = get_parsed_number();
 
-    prompt("Enter the operation: ");
-    let mut operation = String::new();
-    io::stdin().read_line(&mut operation).expect("error reading line");
-    let operation = operation.trim();
+        prompt("Enter the operation: ");
+        let mut operation = String::new();
+        io::stdin().read_line(&mut operation).expect("error reading line");
+        let operation = operation.trim();
 
-    let op = match operation {
-        "+" => Operations::Add,
-        "-" => Operations::Subtract,
-        "*" => Operations::Multiply,
-        "/" => Operations::Divide,
-        _ => {
-            println!("unknown operation");
-            return;
+        let op = match parse_operation(operation) {
+            Some(op) => op,
+            None => {
+                println!("Invalid Operation");
+                return;
+            }
+        };
+
+        if let Some(res) = op.apply_operation(first_number, second_number) {
+            println!("Result: {res}");
         }
-    };
-
-    if let Some(res) = op.apply_operation(first_number, second_number) {
-        println!("Result: {res}");
     }
 }
