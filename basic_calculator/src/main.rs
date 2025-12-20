@@ -4,19 +4,19 @@ use std::io::Write;
 pub mod math;
 use math::operations::{ add, subtract, multiply, divide };
 
-enum Operations {
+enum Operation {
     Add,
     Subtract,
     Multiply,
     Divide
 }
 
-impl Operations {
-    fn apply_operation(&self, lhs: f64, rhs: f64) -> Option<f64> {
+impl Operation {
+    fn apply(&self, lhs: f64, rhs: f64) -> Option<f64> {
         match self {
-           Self::Add => add(lhs, rhs),
-           Self::Subtract => subtract(lhs, rhs),
-           Self::Multiply => multiply(lhs, rhs),
+           Self::Add => Some(add(lhs, rhs)),
+           Self::Subtract => Some(subtract(lhs, rhs)),
+           Self::Multiply => Some(multiply(lhs, rhs)),
            Self::Divide => divide(lhs, rhs),
         }
     }
@@ -24,6 +24,7 @@ impl Operations {
 
 fn welcome_prompt() {
     println!("Basic Calculator (+, -, *, /)");
+    println!("type 'quit' to exit");
 }
 
 fn prompt(msg: &str) {
@@ -31,25 +32,39 @@ fn prompt(msg: &str) {
     io::stdout().flush().unwrap();
 }
 
-fn get_parsed_number() -> f64 {
+fn get_parsed_number() -> Option<f64> {
     loop {
-        let mut number = String::new();
-        if io::stdin().read_line(&mut number).is_ok() {
-            if let Ok(num) = number.trim().parse::<f64>() {
-                return num;
+        let mut input = String::new();
+        if io::stdin().read_line(&mut input).is_ok() {
+            if input.trim() == "quit" {
+                return None;
+            }
+            if let Ok(num) = input.trim().parse::<f64>() {
+                return Some(num);
             }
         }
         println!("Invalid Number, Try Again");
+        prompt("Enter Valid Number: ");
     }
 }
 
-fn parse_operation(op: &str) -> Option<Operations> {
+fn parse_operation(op: &str) -> Option<Operation> {
     match op {
-        "+" => Some(Operations::Add),
-        "-" => Some(Operations::Subtract),
-        "*" => Some(Operations::Multiply),
-        "/" => Some(Operations::Divide),
+        "+" => Some(Operation::Add),
+        "-" => Some(Operation::Subtract),
+        "*" => Some(Operation::Multiply),
+        "/" => Some(Operation::Divide),
         _ => None,
+    }
+}
+
+fn quit_or_unwrap(opt: Option<f64>) -> f64 {
+    match opt {
+        Some(n) => n,
+        None => {
+            println!("Quitting Program");
+            std::process::exit(0);
+        }
     }
 }
 
@@ -57,19 +72,17 @@ fn main() {
     welcome_prompt();
 
     loop {
-        prompt("Enter the first number: ");
-        let first_number = get_parsed_number();
+        prompt("Enter The First Number: ");
+        let first_number = quit_or_unwrap(get_parsed_number());
 
-
-        prompt("Enter the second number: ");
-        let second_number = get_parsed_number();
+        prompt("Enter The Second Number: ");
+        let second_number = quit_or_unwrap(get_parsed_number());
 
         prompt("Enter the operation: ");
         let mut operation = String::new();
-        io::stdin().read_line(&mut operation).expect("error reading line");
-        let operation = operation.trim();
+        io::stdin().read_line(&mut operation).expect("Error Reading Line");
 
-        let op = match parse_operation(operation) {
+        let op = match parse_operation(operation.trim()) {
             Some(op) => op,
             None => {
                 println!("Invalid Operation");
@@ -77,8 +90,8 @@ fn main() {
             }
         };
 
-        if let Some(res) = op.apply_operation(first_number, second_number) {
-            println!("Result: {res}");
+        if let Some(res) = op.apply(first_number, second_number) {
+            println!("Result: {res:.2}");
         }
     }
 }

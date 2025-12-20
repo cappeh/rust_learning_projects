@@ -1,13 +1,13 @@
-pub fn add(lhs: f64, rhs: f64) -> Option<f64> {
-    Some(lhs + rhs)
+pub fn add(lhs: f64, rhs: f64) -> f64 {
+    lhs + rhs
 }
 
-pub fn subtract(lhs: f64, rhs: f64) -> Option<f64> {
-    Some(lhs - rhs)
+pub fn subtract(lhs: f64, rhs: f64) -> f64 {
+    lhs - rhs
 }
 
-pub fn multiply(lhs: f64, rhs: f64) -> Option<f64> {
-    Some(lhs * rhs)
+pub fn multiply(lhs: f64, rhs: f64) -> f64 {
+    lhs * rhs
 }
 
 pub fn divide(lhs: f64, rhs: f64) -> Option<f64> {
