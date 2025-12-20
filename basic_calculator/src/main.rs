@@ -1,6 +1,10 @@
 use std::io;
 use std::io::Write;
 
+use crate::math::operations::{ add, subtract, multiply, divide };
+
+pub mod math;
+
 enum Operations {
     Add,
     Subtract,
@@ -8,29 +12,35 @@ enum Operations {
     Divide
 }
 
-fn get_parsed_number() -> u32 {
-    let mut number = String::new();
-    io::stdin().read_line(&mut number).expect("Error Reading Stdin");
-    let number: u32 = number.trim().parse().expect("Invalid Number");
-    number
+fn prompt(msg: &str) {
+    print!("{msg}");
+    io::stdout().flush().unwrap();
+}
+
+fn get_parsed_number() -> f64 {
+    loop {
+        let mut number = String::new();
+        if io::stdin().read_line(&mut number).is_ok() {
+            if let Ok(num) = number.trim().parse::<f64>() {
+                return num;
+            }
+        }
+        println!("Invalid Number, Try Again");
+    }
 }
 
 fn main() {
     println!("Basic Calculator!");
     println!("Operations include '+,-,*,/'");
 
-    print!("Enter the first number: ");
-    io::stdout().flush().unwrap();
+    prompt("Enter the first number: ");
     let first_number = get_parsed_number();
-    io::stdout().flush().unwrap();
 
 
-    print!("Enter the second number: ");
-    io::stdout().flush().unwrap();
+    prompt("Enter the second number: ");
     let second_number = get_parsed_number();
 
-    print!("Enter the operation: ");
-    io::stdout().flush().unwrap();
+    prompt("Enter the operation: ");
     let mut operation = String::new();
     io::stdin().read_line(&mut operation).expect("error reading line");
     let operation = operation.trim();
@@ -46,19 +56,27 @@ fn main() {
         }
     };
 
-    let result = match op {
-        Operations::Add => first_number + second_number,
-        Operations::Subtract => first_number - second_number,
-        Operations::Multiply => first_number * second_number,
-        Operations::Divide => {
-            if second_number == 0 {
-                println!("Error: Division by Zero");
-                return;
-            } else {
-                first_number / second_number
+    match op {
+        Operations::Add => {
+            if let Some(res) = add(first_number, second_number) {
+                println!("Result: {res}");
             }
         }
+        Operations::Subtract => {
+            if let Some(res) = subtract(first_number, second_number) {
+                println!("Result: {res}");
+            }
+        }
+        Operations::Multiply => {
+            if let Some(res) = multiply(first_number, second_number) {
+                println!("Result: {res}");
+            }
+        }
+        Operations::Divide => {
+            if let Some(res) = divide(first_number, second_number) {
+                println!("Result: {res}");
+            }
+        }
+        
     };
-
-    println!("Result: {result}");
 }
