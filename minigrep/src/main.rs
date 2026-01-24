@@ -4,8 +4,6 @@ use std::error::Error;
 use minigrep::{search, search_case_insensitive};
 
 fn main() {
-    // let args: Vec<String> = env::args().collect();
-
     let config = Config::build(env::args()).unwrap_or_else(|err| {
         eprintln!("Problem parsing arguments: {err}");
         process::exit(1);
@@ -20,10 +18,10 @@ fn main() {
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.file_path)?;
 
-    let results = if config.ignore_case {
-        search_case_insensitive(&config.query, &contents)
+    let results: Vec<&str> = if config.ignore_case {
+        search_case_insensitive(&config.query, &contents).collect()
     } else {
-        search(&config.query, &contents)
+        search(&config.query, &contents).collect()
     };
 
     for line in results {
@@ -55,13 +53,11 @@ impl Config {
             None => return Err("Didnt get a file path"),
         };
 
-        let ignore_case = env::var("IGNORE_CASE").is_ok();
-
-        // if args.contains(&"--case-sensitive".to_string()) {
-        //     ignore_case = false;
-        // } else if args.contains(&"--ignore-case".to_string()) {
-        //    ignore_case = true;
-        // }
+        let ignore_case = match args.next() {
+            Some(flag) if flag == "--case-sensitive" => false,
+            Some(flag) if flag == "--ignore-case" => true,
+            _ => env::var("IGNORE_CASE").is_ok(),
+        };
 
         Ok(Config { query, file_path, ignore_case })
     }
