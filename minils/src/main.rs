@@ -1,4 +1,4 @@
-use std::{env, fs};
+use std::{env, fs, os::unix::fs::PermissionsExt};
 
 fn main() -> std::io::Result<()> {
 
@@ -10,7 +10,7 @@ fn main() -> std::io::Result<()> {
         let entry = entry?;
         let meta = entry.metadata()?;
 
-        println!("{:?} {:?}", meta.permissions(), entry.path());
+        println!("{:#o} {:?}", meta.permissions().mode(), entry.path());
     }
 
     Ok(())
