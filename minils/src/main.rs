@@ -11,12 +11,16 @@ fn main() -> std::io::Result<()> {
     for entry in fs::read_dir(cmd.directory)? {
         let entry = entry?;
         let meta = entry.metadata()?;
+
         let mode = meta.permissions().mode();
         let ft = meta.file_type();
-        let path = entry.path();
-        let filename = path.file_name().unwrap().to_string_lossy();
 
-        println!("{}{}  {}", filetype(ft), mode_to_rwx(mode), filename);
+        println!(
+            "{}{}  {}",
+            filetype(ft),
+            mode_to_rwx(mode),
+            entry.file_name().to_string_lossy()
+        );
 
     }
 
