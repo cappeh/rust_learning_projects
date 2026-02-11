@@ -1,13 +1,14 @@
 use std::{env, fs, os::unix::fs::PermissionsExt};
 use std::fs::FileType;
+use std::path::PathBuf;
 
 fn main() -> std::io::Result<()> {
 
     let args: Vec<String> = env::args().collect();
 
-    let dir = &args[1];
+    let cmd = parse_args(&args);
 
-    for entry in fs::read_dir(dir)? {
+    for entry in fs::read_dir(cmd.directory)? {
         let entry = entry?;
         let meta = entry.metadata()?;
         let mode = meta.permissions().mode();
@@ -22,12 +23,20 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn filetype(ftype: FileType) -> String {
-    let mut ft = String::new();
+struct Cmd {
+    directory: PathBuf,
+}
 
-    ft.push(if ftype.is_dir() { 'd' } else { '-' });
+fn parse_args(args: &[String]) -> Cmd {
+   let directory = args.get(1)
+       .map(PathBuf::from)
+       .unwrap_or_else(|| PathBuf::from("."));
 
-    ft
+    Cmd { directory }
+}
+
+fn filetype(ft: FileType) -> char {
+    if ft.is_dir() { 'd' } else { '-' }
 }
 
 fn mode_to_rwx(mode: u32) -> String {
