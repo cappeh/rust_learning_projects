@@ -37,13 +37,18 @@ struct Cmd {
     directory: PathBuf,
     show_all: bool,
 }
-
 fn parse_args(args: &[String]) -> Cmd {
-   let directory = args.get(1)
-       .map(PathBuf::from)
-       .unwrap_or_else(|| PathBuf::from("."));
+    let mut directory: Option<PathBuf> = None;
+    let mut show_all = false;
 
-    let show_all = args.iter().any(|a| a == "-a");
+    for arg in args.iter().skip(1) {
+        if arg == "-a" {
+            show_all = true;
+        } else if directory.is_none() {
+           directory = Some(PathBuf::from(arg));
+        }
+    }
+    let directory = directory.unwrap_or_else(|| PathBuf::from("."));
     Cmd { directory, show_all }
 }
 
