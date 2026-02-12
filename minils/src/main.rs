@@ -11,6 +11,12 @@ fn main() -> std::io::Result<()> {
     for entry in fs::read_dir(cmd.directory)? {
         let entry = entry?;
         let meta = entry.metadata()?;
+        let filename = entry.file_name();
+        let filename_str = filename.to_string_lossy();
+
+        if !cmd.show_all && filename_str.starts_with('.') {
+            continue;
+        }
 
         let mode = meta.permissions().mode();
         let ft = meta.file_type();
@@ -29,6 +35,7 @@ fn main() -> std::io::Result<()> {
 
 struct Cmd {
     directory: PathBuf,
+    show_all: bool,
 }
 
 fn parse_args(args: &[String]) -> Cmd {
@@ -36,7 +43,8 @@ fn parse_args(args: &[String]) -> Cmd {
        .map(PathBuf::from)
        .unwrap_or_else(|| PathBuf::from("."));
 
-    Cmd { directory }
+    let show_all = args.iter().any(|a| a == "-a");
+    Cmd { directory, show_all }
 }
 
 fn filetype(ft: FileType) -> char {
